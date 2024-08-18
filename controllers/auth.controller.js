@@ -5,13 +5,13 @@ export const signup = async (req, res, next) => {
     const { username, email, password } = req.body;
 
     if (!username || !email || !password) {
-        return res.status(400).json("Semua field harus diisi.");
+        return res.status(400).json({ success: false, message: "Semua field harus diisi." });
     }
 
     try {
         const existingUser = await User.findOne({ $or: [{ username }, { email }] });
         if (existingUser) {
-            return res.status(400).json("Username atau email sudah terdaftar.");
+            return res.status(400).json({ success: false, message: "Username atau email sudah terdaftar." });
         }
 
         const salt = await bcryptjs.genSalt(10);
@@ -24,9 +24,10 @@ export const signup = async (req, res, next) => {
         });
 
         await newUser.save();
-        res.status(201).json("Pengguna berhasil dibuat");
+        res.status(201).json({ success: true, message: "Pengguna berhasil dibuat" });
     } catch (error) {
         next(error)
     }
 };
+
 
